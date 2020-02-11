@@ -1,6 +1,6 @@
+use std::collections::HashSet;
 use std::path::PathBuf;
 use structopt::StructOpt;
-use std::collections::HashSet;
 
 #[derive(StructOpt, Debug)]
 #[structopt(after_help = "
@@ -32,20 +32,23 @@ pub struct CrustOpts {
 
     /// Files to process
     #[structopt(name = "FILES", parse(from_os_str))]
-    files: Vec<PathBuf>,
+    pub files: Vec<PathBuf>,
 }
 
 #[derive(Debug)]
 pub struct Fields<'a> {
     field_spec: &'a str,
-    delimiter: char,
     fields: Vec<usize>,
     open: bool,
 }
 
 impl<'a> Fields<'a> {
-    pub fn new(field_spec: &'a str, delimiter: char) -> Self {
-        let mut fields = Fields { field_spec, delimiter, fields: Vec::new(), open: false };
+    pub fn new(field_spec: &'a str) -> Self {
+        let mut fields = Fields {
+            field_spec,
+            fields: Vec::new(),
+            open: false,
+        };
         fields.parse();
         fields
     }
@@ -56,7 +59,7 @@ impl<'a> Fields<'a> {
             spec.push_str("1");
         }
         spec.push_str(self.field_spec);
-        while spec.ends_with("-") {
+        while spec.ends_with('-') {
             self.open = true;
             spec.pop();
         }
@@ -70,7 +73,9 @@ impl<'a> Fields<'a> {
             .split(',')
             .filter(|s| !s.is_empty())
             .map(|interval| {
-                if interval.ends_with('-') { spec_err(); }
+                if interval.starts_with('-') || interval.ends_with('-') {
+                    spec_err();
+                }
                 let interval = interval
                     .split('-')
                     .map(|num| num.parse().unwrap())
@@ -94,7 +99,7 @@ impl<'a> Fields<'a> {
 
 fn main() {
     let args = CrustOpts::from_args();
-    let fields = Fields::new(&args.field_spec, args.delimiter);
+    let fields = Fields::new(&args.field_spec);
     println!("{:?}", args);
     println!("{:?}", fields);
 }
