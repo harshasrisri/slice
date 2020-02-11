@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 use structopt::StructOpt;
+use std::collections::HashSet;
 
 #[derive(StructOpt, Debug)]
 #[structopt(after_help = "
@@ -34,7 +35,66 @@ pub struct CrustOpts {
     files: Vec<PathBuf>,
 }
 
+#[derive(Debug)]
+pub struct Fields<'a> {
+    field_spec: &'a str,
+    delimiter: char,
+    fields: Vec<usize>,
+    open: bool,
+}
+
+impl<'a> Fields<'a> {
+    pub fn new(field_spec: &'a str, delimiter: char) -> Self {
+        let mut fields = Fields { field_spec, delimiter, fields: Vec::new(), open: false };
+        fields.parse();
+        fields
+    }
+
+    pub fn parse(&mut self) {
+        let mut spec = String::new();
+        if self.field_spec.starts_with('-') {
+            spec.push_str("1");
+        }
+        spec.push_str(self.field_spec);
+        while spec.ends_with("-") {
+            self.open = true;
+            spec.pop();
+        }
+
+        let spec_err = || {
+            eprintln!("Invalid field specification: {}", self.field_spec);
+            std::process::exit(1);
+        };
+
+        self.fields = spec
+            .split(',')
+            .filter(|s| !s.is_empty())
+            .map(|interval| {
+                if interval.ends_with('-') { spec_err(); }
+                let interval = interval
+                    .split('-')
+                    .map(|num| num.parse().unwrap())
+                    .collect::<Vec<usize>>();
+                if interval.len() == 1 {
+                    interval
+                } else if interval.len() == 2 {
+                    (interval[0]..=interval[1]).collect()
+                } else {
+                    spec_err()
+                }
+            })
+            .flatten()
+            .collect::<HashSet<usize>>()
+            .into_iter()
+            .collect();
+
+        self.fields.sort();
+    }
+}
+
 fn main() {
     let args = CrustOpts::from_args();
+    let fields = Fields::new(&args.field_spec, args.delimiter);
     println!("{:?}", args);
+    println!("{:?}", fields);
 }
