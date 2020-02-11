@@ -15,7 +15,7 @@ FIELD SPECIFICATION:
 ")]
 pub struct CrustOpts {
     /// Specify the fields to be extracted.
-    #[structopt(short, long)]
+    #[structopt(short, long, allow_hyphen_values=true)]
     pub field_spec: String,
 
     /// Specify the delimiter to be used to split columns
