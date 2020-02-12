@@ -7,74 +7,74 @@ use structopt::StructOpt;
 FIELD SPECIFICATION:
     The required fileds to be extracted can be specified or combined like below:
         3           => Extract column 3
-        4-7         => Extract columns 4,5,6,7
-        -5          => Extract all columns upto and including 5, i.e 1,2,3,4,5
-        6-          => Extract all columns from and including 6, ie. 6,7,8,...
-        2,4,6       => Extract only columns 2, 4 and 6
-        -2,5-7,9-   => Extract columns 1,2,5,6,7,9,...
+        4-7         => Extract fields 4,5,6,7
+        -5          => Extract all fields upto and including 5, i.e 1,2,3,4,5
+        6-          => Extract all fields from and including 6, ie. 6,7,8,...
+        2,4,6       => Extract only fields 2, 4 and 6
+        -2,5-7,9-   => Extract fields 1,2,5,6,7,9,...
 ")]
 pub struct CrustOpts {
     /// Specify the fields to be extracted.
-    #[structopt(short, long, allow_hyphen_values=true)]
-    pub field_spec: String,
+    #[structopt(short, long, allow_hyphen_values = true)]
+    fields: String,
 
-    /// Specify the delimiter to be used to split columns
+    /// Specify the delimiter to be used to split fields
     #[structopt(short, long, default_value = "\t")]
-    pub delimiter: char,
+    delimiter: char,
 
     /// Include lines that don't contain a delimiter
     #[structopt(short, long)]
-    pub non_delimited: bool,
+    non_delimited: bool,
 
-    /// Complement field spec. Print all columns but those specified with -f
+    /// Complement field spec. Print all fields but those specified with -f
     #[structopt(short, long)]
-    pub complement: bool,
+    complement: bool,
 
     /// Files to process
     #[structopt(name = "FILES", parse(from_os_str))]
-    pub files: Vec<PathBuf>,
-}
+    files: Vec<PathBuf>,
 
-#[derive(Debug)]
-pub struct Fields<'a> {
-    field_spec: &'a str,
-    fields: Vec<usize>,
+    #[structopt(skip)]
+    fields_list: Vec<usize>,
+
+    #[structopt(skip)]
     open: bool,
 }
 
-impl<'a> Fields<'a> {
-    pub fn new(field_spec: &'a str) -> Self {
-        let mut fields = Fields {
-            field_spec,
-            fields: Vec::new(),
-            open: false,
+impl CrustOpts {
+    pub fn parse_fields(&mut self) {
+        let spec_err = |spec| {
+            eprintln!("Invalid field specification: {}", spec);
+            std::process::exit(1);
         };
-        fields.parse();
-        fields
-    }
 
-    pub fn parse(&mut self) {
+        if self.fields.contains(",-")
+            || self.fields.contains("-,")
+            || self.fields.contains("--")
+            || self
+                .fields
+                .chars()
+                .any(|c| !c.is_numeric() && c != '-' && c != ',')
+        {
+            spec_err(&self.fields);
+        }
+
         let mut spec = String::new();
-        if self.field_spec.starts_with('-') {
+        if self.fields.starts_with('-') {
             spec.push_str("1");
         }
-        spec.push_str(self.field_spec);
+        spec.push_str(&self.fields);
         while spec.ends_with('-') {
             self.open = true;
             spec.pop();
         }
 
-        let spec_err = || {
-            eprintln!("Invalid field specification: {}", self.field_spec);
-            std::process::exit(1);
-        };
-
-        self.fields = spec
+        self.fields_list = spec
             .split(',')
             .filter(|s| !s.is_empty())
             .map(|interval| {
                 if interval.starts_with('-') || interval.ends_with('-') {
-                    spec_err();
+                    spec_err(&self.fields);
                 }
                 let interval = interval
                     .split('-')
@@ -85,7 +85,7 @@ impl<'a> Fields<'a> {
                 } else if interval.len() == 2 {
                     (interval[0]..=interval[1]).collect()
                 } else {
-                    spec_err()
+                    spec_err(&self.fields)
                 }
             })
             .flatten()
@@ -93,13 +93,12 @@ impl<'a> Fields<'a> {
             .into_iter()
             .collect();
 
-        self.fields.sort();
+        self.fields_list.sort();
     }
 }
 
 fn main() {
-    let args = CrustOpts::from_args();
-    let fields = Fields::new(&args.field_spec);
+    let mut args = CrustOpts::from_args();
+    args.parse_fields();
     println!("{:?}", args);
-    println!("{:?}", fields);
 }
