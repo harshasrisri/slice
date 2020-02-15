@@ -70,10 +70,10 @@ impl FieldParser {
     }
 
     fn can_print(&self, col: usize) -> bool {
-        let mut res = self.fields.contains(&col);
+        let mut res = self.fields.binary_search(&col).is_ok();
         if self.open {
             if let Some(last) = self.fields.last() {
-                res = res && (col >= *last);
+                res = res || (col >= *last);
             }
         }
         res
@@ -81,6 +81,7 @@ impl FieldParser {
 
     pub fn parse(&self, line: &str) -> String {
         line.split(self.delimiter)
+            .filter(|&s| s != "")
             .enumerate()
             .filter_map(|(i, word)| {
                 if self.can_print(i + 1) {
