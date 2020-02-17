@@ -2,17 +2,13 @@ use std::collections::HashSet;
 
 #[derive(Debug)]
 pub struct FieldParser {
-    delimiter: char,
-    seperator: String,
     fields: Vec<usize>,
     open: bool,
 }
 
 impl FieldParser {
-    pub fn from_spec(field_spec: &str, delimiter: char, seperator: String) -> Self {
+    pub fn from_spec(field_spec: &str) -> Self {
         let mut parser = FieldParser {
-            delimiter,
-            seperator,
             fields: Vec::new(),
             open: false,
         };
@@ -69,7 +65,7 @@ impl FieldParser {
         parser
     }
 
-    fn can_print(&self, col: usize) -> bool {
+    pub fn valid_field(&self, col: usize) -> bool {
         let mut res = self.fields.binary_search(&col).is_ok();
         if self.open {
             if let Some(last) = self.fields.last() {
@@ -77,20 +73,5 @@ impl FieldParser {
             }
         }
         res
-    }
-
-    pub fn parse(&self, line: &str) -> String {
-        line.split(self.delimiter)
-            .filter(|&s| s != "")
-            .enumerate()
-            .filter_map(|(i, word)| {
-                if self.can_print(i + 1) {
-                    Some(word)
-                } else {
-                    None
-                }
-            })
-            .collect::<Vec<_>>()
-            .join(&self.seperator)
     }
 }

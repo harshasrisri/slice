@@ -1,5 +1,7 @@
 use std::path::PathBuf;
 use structopt::StructOpt;
+use std::char::ParseCharError;
+use std::str::FromStr;
 
 #[derive(StructOpt, Debug)]
 #[structopt(after_help = "
@@ -18,7 +20,7 @@ pub struct CrustOpts {
     pub fields: String,
 
     /// Delimiter to be used to split fields
-    #[structopt(short, long, default_value = " ")]
+    #[structopt(short, long, parse(try_from_str = parse_for_tab),default_value = " ")]
     pub delimiter: char,
 
     /// Separator to use to print results
@@ -36,4 +38,12 @@ pub struct CrustOpts {
     /// Files to process
     #[structopt(name = "FILES", parse(from_os_str), default_value = "-")]
     pub files: Vec<PathBuf>,
+}
+
+fn parse_for_tab(src: &str) -> Result<char,ParseCharError> {
+    if src == "\\t" {
+        Ok('\t')
+    } else {
+        char::from_str(src)
+    }
 }

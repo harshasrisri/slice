@@ -8,9 +8,13 @@ use fields::FieldParser;
 mod args;
 use args::CrustOpts;
 
+mod split;
+use split::Splitter;
+
 fn main() {
     let args = CrustOpts::from_args();
-    let parser = FieldParser::from_spec(&args.fields, args.delimiter, args.separator);
+    let parser = FieldParser::from_spec(&args.fields);
+    let splitter = Splitter::new(&parser, args.delimiter, args.separator.as_str());
 
     for file in args.files {
         let reader: Box<dyn BufRead> = match file.to_str() {
@@ -30,7 +34,7 @@ fn main() {
         };
 
         for line in reader.lines().filter_map(|line| line.ok()) {
-            println!("{}", parser.parse(&line));
+            println!("{}", splitter.parse(&line));
         }
     }
 }
