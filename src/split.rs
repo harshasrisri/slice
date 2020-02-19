@@ -1,5 +1,6 @@
 use crate::FieldParser;
 
+#[derive(Debug)]
 pub struct Splitter<'a> {
     fields: &'a FieldParser,
     delimiter: char,

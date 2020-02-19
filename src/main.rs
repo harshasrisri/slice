@@ -13,8 +13,12 @@ use split::Splitter;
 
 fn main() {
     let args = CrustOpts::from_args();
-    let parser = FieldParser::from_spec(&args.fields).expect("Error parsing fields");
+    let parser = FieldParser::from_spec(&args.fields, args.complement).expect("Error parsing fields");
     let splitter = Splitter::new(&parser, args.delimiter, args.separator);
+
+    println!("{:?}", args);
+    println!("{:?}", parser);
+    println!("{:?}", splitter);
 
     for file in args.files {
         let reader: Box<dyn BufRead> = match file.to_str() {

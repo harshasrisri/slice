@@ -4,15 +4,16 @@ use std::collections::HashSet;
 pub struct FieldParser {
     fields: Vec<usize>,
     open: bool,
+    complement: bool,
 }
 
 impl FieldParser {
-    pub fn from_spec(field_spec: &str) -> Result<Self, &str> {
+    pub fn from_spec(field_spec: &str, complement: bool) -> Result<Self, &str> {
         let mut parser = FieldParser {
             fields: Vec::new(),
             open: false,
+            complement,
         };
-        let mut spec_err = false;
         let error = Err("Invalid field specification");
 
         if field_spec.contains(",-")
@@ -35,38 +36,38 @@ impl FieldParser {
             spec.pop();
         }
 
-        parser.fields = spec
+        let partially_parsed = spec
             .split(',')
             .filter(|s| !s.is_empty())
             .map(|interval| {
                 if interval.starts_with('-') || interval.ends_with('-') {
-                    spec_err = true;
-                    return Vec::with_capacity(0);
+                    return None;
                 }
                 let interval = interval
                     .split('-')
                     .map(|num| num.parse().unwrap())
                     .collect::<Vec<usize>>();
                 if interval.len() == 1 {
-                    interval
+                    Some(interval)
                 } else if interval.len() == 2 {
-                    (interval[0]..=interval[1]).collect()
+                    Some((interval[0]..=interval[1]).collect())
                 } else {
-                    spec_err = true;
-                    return Vec::with_capacity(0);
+                    None
                 }
-            })
-            .flatten()
+            }).collect::<Vec<_>>();
+
+        if partially_parsed.iter().any(|item| item.is_none()) {
+            return error;
+        }
+
+        parser.fields = partially_parsed.into_iter()
+            .flat_map(|item| item.unwrap())
             .collect::<HashSet<usize>>()
             .into_iter()
             .collect();
 
-        if spec_err {
-            error
-        } else {
-            parser.fields.sort();
-            Ok(parser)
-        }
+        parser.fields.sort();
+        Ok(parser)
     }
 
     pub fn valid_field(&self, col: usize) -> bool {
@@ -76,6 +77,6 @@ impl FieldParser {
                 res = res || (col >= *last);
             }
         }
-        res
+        res ^ self.complement
     }
 }
