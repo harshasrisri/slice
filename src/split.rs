@@ -3,15 +3,17 @@ use crate::FieldParser;
 pub struct Splitter<'a> {
     fields: &'a FieldParser,
     delimiter: char,
-    separator: &'a str,
+    separator: char,
 }
 
 impl<'a> Splitter<'a> {
-    pub fn new(fields: &'a FieldParser, delimiter: char, separator: &'a str) -> Self {
+    pub fn new(fields: &'a FieldParser, delimiter: char, separator: char) -> Self {
         Splitter { fields, delimiter, separator }
     }
 
     pub fn parse(&self, line: &str) -> String {
+        let mut buf = [0; 4];
+        let sep = self.separator.encode_utf8(&mut buf);
         line.split(self.delimiter)
             .filter(|&s| s != "")
             .enumerate()
@@ -23,6 +25,6 @@ impl<'a> Splitter<'a> {
                 }
             })
             .collect::<Vec<_>>()
-            .join(&self.separator)
+            .join(sep)
     }
 }

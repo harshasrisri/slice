@@ -7,15 +7,13 @@ pub struct FieldParser {
 }
 
 impl FieldParser {
-    pub fn from_spec(field_spec: &str) -> Self {
+    pub fn from_spec(field_spec: &str) -> Result<Self, &str> {
         let mut parser = FieldParser {
             fields: Vec::new(),
             open: false,
         };
-        let spec_err = |spec| {
-            eprintln!("Invalid field specification: {}", spec);
-            std::process::exit(1);
-        };
+        let mut spec_err = false;
+        let error = Err("Invalid field specification");
 
         if field_spec.contains(",-")
             || field_spec.contains("-,")
@@ -24,7 +22,7 @@ impl FieldParser {
                 .chars()
                 .any(|c| !c.is_numeric() && c != '-' && c != ',')
         {
-            spec_err(field_spec);
+            return error;
         }
 
         let mut spec = String::new();
@@ -42,7 +40,8 @@ impl FieldParser {
             .filter(|s| !s.is_empty())
             .map(|interval| {
                 if interval.starts_with('-') || interval.ends_with('-') {
-                    spec_err(field_spec);
+                    spec_err = true;
+                    return Vec::with_capacity(0);
                 }
                 let interval = interval
                     .split('-')
@@ -53,7 +52,8 @@ impl FieldParser {
                 } else if interval.len() == 2 {
                     (interval[0]..=interval[1]).collect()
                 } else {
-                    spec_err(field_spec)
+                    spec_err = true;
+                    return Vec::with_capacity(0);
                 }
             })
             .flatten()
@@ -61,8 +61,12 @@ impl FieldParser {
             .into_iter()
             .collect();
 
-        parser.fields.sort();
-        parser
+        if spec_err {
+            error
+        } else {
+            parser.fields.sort();
+            Ok(parser)
+        }
     }
 
     pub fn valid_field(&self, col: usize) -> bool {

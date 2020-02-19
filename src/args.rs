@@ -20,12 +20,12 @@ pub struct CrustOpts {
     pub fields: String,
 
     /// Delimiter to be used to split fields
-    #[structopt(short, long, parse(try_from_str = parse_for_tab),default_value = " ")]
+    #[structopt(short, long, parse(try_from_str = parse_for_tab), default_value = " ")]
     pub delimiter: char,
 
     /// Separator to use to print results
-    #[structopt(short, long, default_value = " ")]
-    pub separator: String,
+    #[structopt(short, long, parse(try_from_str = parse_for_tab), default_value = " ")]
+    pub separator: char,
 
     /// Include lines that don't contain a delimiter
     #[structopt(short, long)]
