@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::BTreeSet;
 
 #[derive(Debug)]
 pub struct FieldParser {
@@ -16,22 +16,12 @@ impl FieldParser {
         };
         let error = Err("Invalid field specification");
 
-        if field_spec.contains(",-")
-            || field_spec.contains("-,")
-            || field_spec.contains("--")
-            || field_spec
-                .chars()
-                .any(|c| !c.is_numeric() && c != '-' && c != ',')
-        {
-            return error;
-        }
-
         let mut spec = String::new();
         if field_spec.starts_with('-') {
             spec.push_str("1");
         }
         spec.push_str(&field_spec);
-        while spec.ends_with('-') {
+        if spec.ends_with('-') {
             parser.open = true;
             spec.pop();
         }
@@ -39,13 +29,14 @@ impl FieldParser {
         let partially_parsed = spec
             .split(',')
             .filter(|s| !s.is_empty())
+            .inspect(|item| println!("{:?}", item))
             .map(|interval| {
                 if interval.starts_with('-') || interval.ends_with('-') {
                     return None;
                 }
                 let interval = interval
                     .split('-')
-                    .map(|num| num.parse().unwrap())
+                    .map(|num| num.parse().unwrap_or_default())
                     .collect::<Vec<usize>>();
                 if interval.len() == 1 {
                     Some(interval)
@@ -54,20 +45,29 @@ impl FieldParser {
                 } else {
                     None
                 }
-            }).collect::<Vec<_>>();
+            })
+            .inspect(|item| println!("{:?}", item))
+            .collect::<Vec<_>>();
 
-        if partially_parsed.iter().any(|item| item.is_none()) {
+        if partially_parsed
+            .iter()
+            .any(|item| item.is_none() || item.as_ref().unwrap().is_empty())
+        {
             return error;
         }
 
-        parser.fields = partially_parsed.into_iter()
+        parser.fields = partially_parsed
+            .into_iter()
             .flat_map(|item| item.unwrap())
-            .collect::<HashSet<usize>>()
+            .collect::<BTreeSet<usize>>()
             .into_iter()
             .collect();
 
-        parser.fields.sort();
-        Ok(parser)
+        if parser.fields.binary_search(&0).is_ok() {
+            error
+        } else {
+            Ok(parser)
+        }
     }
 
     pub fn valid_field(&self, col: usize) -> bool {

@@ -13,7 +13,8 @@ use split::Splitter;
 
 fn main() {
     let args = CrustOpts::from_args();
-    let parser = FieldParser::from_spec(&args.fields, args.complement).expect("Error parsing fields");
+    let parser =
+        FieldParser::from_spec(&args.fields, args.complement).expect("Error parsing fields");
     let splitter = Splitter::new(&parser, args.delimiter, args.separator);
 
     println!("{:?}", args);

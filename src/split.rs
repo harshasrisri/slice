@@ -9,7 +9,11 @@ pub struct Splitter<'a> {
 
 impl<'a> Splitter<'a> {
     pub fn new(fields: &'a FieldParser, delimiter: char, separator: char) -> Self {
-        Splitter { fields, delimiter, separator }
+        Splitter {
+            fields,
+            delimiter,
+            separator,
+        }
     }
 
     pub fn parse(&self, line: &str) -> String {

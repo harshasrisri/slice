@@ -1,7 +1,7 @@
-use std::path::PathBuf;
-use structopt::StructOpt;
 use std::char::ParseCharError;
+use std::path::PathBuf;
 use std::str::FromStr;
+use structopt::StructOpt;
 
 #[derive(StructOpt, Debug)]
 #[structopt(after_help = "
@@ -40,7 +40,7 @@ pub struct CrustOpts {
     pub files: Vec<PathBuf>,
 }
 
-fn parse_for_tab(src: &str) -> Result<char,ParseCharError> {
+fn parse_for_tab(src: &str) -> Result<char, ParseCharError> {
     if src == "\\t" {
         Ok('\t')
     } else {
