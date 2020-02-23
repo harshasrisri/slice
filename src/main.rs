@@ -17,8 +17,6 @@ fn main() {
         FieldParser::from_spec(&args.fields, args.complement).expect("Error parsing fields");
     let splitter = Splitter::new(&parser, args.delimiter, args.separator);
 
-    println!("{:?}", args);
-    println!("{:?}", parser);
     println!("{:?}", splitter);
 
     for file in args.files {
@@ -39,7 +37,11 @@ fn main() {
         };
 
         for line in reader.lines().filter_map(|line| line.ok()) {
-            println!("{}", splitter.parse(&line));
+            let output = splitter.parse(&line);
+            if output.is_empty() && !args.non_delimited {
+                continue;
+            }
+            println!("{}", output);
         }
     }
 }

@@ -26,44 +26,31 @@ impl FieldParser {
             spec.pop();
         }
 
-        let partially_parsed = spec
+        parser.fields = spec
             .split(',')
             .filter(|s| !s.is_empty())
-            .inspect(|item| println!("{:?}", item))
             .map(|interval| {
-                if interval.starts_with('-') || interval.ends_with('-') {
-                    return None;
-                }
                 let interval = interval
                     .split('-')
                     .map(|num| num.parse().unwrap_or_default())
                     .collect::<Vec<usize>>();
-                if interval.len() == 1 {
-                    Some(interval)
-                } else if interval.len() == 2 {
-                    Some((interval[0]..=interval[1]).collect())
+                let items = match interval.len() {
+                    1 => interval,
+                    2 => (interval[0]..=interval[1]).collect(),
+                    _ => Vec::with_capacity(0),
+                };
+                if items.is_empty() {
+                    vec![0]
                 } else {
-                    None
+                    items
                 }
             })
-            .inspect(|item| println!("{:?}", item))
-            .collect::<Vec<_>>();
-
-        if partially_parsed
-            .iter()
-            .any(|item| item.is_none() || item.as_ref().unwrap().is_empty())
-        {
-            return error;
-        }
-
-        parser.fields = partially_parsed
-            .into_iter()
-            .flat_map(|item| item.unwrap())
+            .flatten()
             .collect::<BTreeSet<usize>>()
             .into_iter()
             .collect();
 
-        if parser.fields.binary_search(&0).is_ok() {
+        if parser.fields[0] == 0 {
             error
         } else {
             Ok(parser)
