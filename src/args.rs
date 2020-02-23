@@ -4,7 +4,7 @@ use std::str::FromStr;
 use structopt::StructOpt;
 
 #[derive(StructOpt, Debug)]
-#[structopt(after_help = "
+#[structopt(about, after_help = "
 FIELD SPECIFICATION:
     The required fileds to be extracted can be specified or combined like below:
         3           => Extract column 3
