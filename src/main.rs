@@ -17,8 +17,6 @@ fn main() {
         FieldParser::from_spec(&args.fields, args.complement).expect("Error parsing fields");
     let splitter = Splitter::new(&parser, args.delimiter, args.separator);
 
-    println!("{:?}", splitter);
-
     for file in args.files {
         let reader: Box<dyn BufRead> = match file.to_str() {
             Some("-") => Box::new(BufReader::new(io::stdin())),
