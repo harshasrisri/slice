@@ -50,7 +50,7 @@ impl FieldParser {
             .into_iter()
             .collect();
 
-        if parser.fields[0] == 0 {
+        if parser.fields.first().is_none() || parser.fields.first().unwrap() == &0 {
             error
         } else {
             Ok(parser)

@@ -1,4 +1,4 @@
-use crate::FieldParser;
+use crate::fields::FieldParser;
 
 #[derive(Debug)]
 pub struct Splitter<'a> {
