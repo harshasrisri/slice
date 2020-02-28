@@ -20,7 +20,7 @@ impl<'a> Splitter<'a> {
         let mut buf = [0; 4];
         let sep = self.separator.encode_utf8(&mut buf);
         line.split(self.delimiter)
-            .filter(|&s| s != "")
+            .filter(|&s| !s.is_empty())
             .enumerate()
             .filter_map(|(i, word)| {
                 if self.fields.valid_field(i + 1) {
