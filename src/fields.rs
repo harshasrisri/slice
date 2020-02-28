@@ -23,7 +23,7 @@ impl FieldParser {
         spec.push_str(&field_spec);
         if spec.ends_with('-') {
             parser.open = true;
-            spec.pop();
+            spec.push_str(usize::max_value().to_string().as_str());
         }
 
         parser.fields = spec
@@ -36,7 +36,11 @@ impl FieldParser {
                     .collect::<Vec<usize>>();
                 let items = match interval.len() {
                     1 => interval,
-                    2 => (interval[0]..=interval[1]).collect(),
+                    2 => if interval[1] == usize::max_value() {
+                        vec![interval[0]]
+                    } else {
+                        (interval[0]..=interval[1]).collect()
+                    }
                     _ => Vec::with_capacity(0),
                 };
                 if items.is_empty() {
