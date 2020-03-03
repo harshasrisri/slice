@@ -1,4 +1,5 @@
 use crate::fields::FieldParser;
+use std::fmt::Write;
 
 #[derive(Debug)]
 pub struct Splitter<'a> {
@@ -16,9 +17,7 @@ impl<'a> Splitter<'a> {
         }
     }
 
-    pub fn parse(&self, line: &str) -> String {
-        let mut buf = [0; 4];
-        let sep = self.separator.encode_utf8(&mut buf);
+    pub fn parse<'b>(&self, line: &'b str) -> Vec<&'b str> {
         line.split(self.delimiter)
             .filter(|&s| !s.is_empty())
             .enumerate()
@@ -30,6 +29,19 @@ impl<'a> Splitter<'a> {
                 }
             })
             .collect::<Vec<_>>()
-            .join(sep)
+    }
+
+    pub fn parse_into<T>(&self, input: &str, mut output: &mut T) -> Result<(), std::fmt::Error>
+    where
+        T: Write,
+    {
+        let slices = self.parse(input);
+        for slice in slices.iter().take(slices.len() - 1) {
+            write!(&mut output, "{}{}", slice, self.separator)?;
+        }
+        if let Some(last) = slices.last() {
+            write!(&mut output, "{}", last)?;
+        }
+        Ok(())
     }
 }

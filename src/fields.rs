@@ -36,10 +36,12 @@ impl FieldParser {
                     .collect::<Vec<usize>>();
                 let items = match interval.len() {
                     1 => interval,
-                    2 => if interval[1] == usize::max_value() {
-                        vec![interval[0]]
-                    } else {
-                        (interval[0]..=interval[1]).collect()
+                    2 => {
+                        if interval[1] == usize::max_value() {
+                            vec![interval[0]]
+                        } else {
+                            (interval[0]..=interval[1]).collect()
+                        }
                     }
                     _ => Vec::with_capacity(0),
                 };

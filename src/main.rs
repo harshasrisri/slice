@@ -16,6 +16,7 @@ fn main() {
     let parser =
         FieldParser::from_spec(&args.fields, args.complement).expect("Error parsing fields");
     let splitter = Splitter::new(&parser, args.delimiter, args.separator);
+    let mut output_line = String::new();
 
     for file in args.files {
         let reader: Box<dyn BufRead> = match file.to_str() {
@@ -35,11 +36,12 @@ fn main() {
         };
 
         for line in reader.lines().filter_map(|line| line.ok()) {
-            let output = splitter.parse(&line);
-            if output.is_empty() && !args.non_delimited {
+            output_line.clear();
+            splitter.parse_into(&line, &mut output_line).expect("");
+            if output_line.is_empty() && !args.non_delimited {
                 continue;
             }
-            println!("{}", output);
+            println!("{}", output_line);
         }
     }
 }
