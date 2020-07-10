@@ -1,4 +1,4 @@
-# Crust
+# Slice
 ---
 
 Wrote as a project to scratch an itch that `cut` utility was a tad bit unintuitive. Not aiming to be performant. Not aiming to have feature parity with `cut`. Just to have a close approximation with a different set of defaults. Sneaking in `rust` in the name of tools is starting to get cliche'd, but bear with me on this one - I couldn't resist.
@@ -11,11 +11,11 @@ Wrote as a project to scratch an itch that `cut` utility was a tad bit unintuiti
 ## Usage
 ---
 ```
-crust 0.1.0
+slice 0.1.0
 This is yet another implementation of the 'cut' *nix utility written in rust.
 
 USAGE:
-    crust [FLAGS] [OPTIONS] --fields <fields> [FILES]...
+    slice [FLAGS] [OPTIONS] --fields <fields> [FILES]...
 
 FLAGS:
     -c, --complement       Complement field spec. Print all fields but those specified with -f
@@ -51,7 +51,7 @@ FIELD SPECIFICATION:
 * Skip lines without delimiter
 * Use fields specified as-is
 ```
-shell> crust inputs/pipe.sv -d "|" -f -3,12-15,6-9,22,30- -s ","
+shell> slice inputs/pipe.sv -d "|" -f -3,12-15,6-9,22,30- -s ","
 Suspendisse,blandit,eros,luctus,Donec,at,egestas,egestas,nunc,sit,amet,Duis,id,turpis,Maecenas,rhoncus,bibendum,mi,eget,tristique,erat,vehicula,et,Duis,ultricies,laoreet,massa,Duis,ullamcorper,justo,eget,diam,mattis,ac,tincidunt,odio,suscipit,Aenean,feugiat,purus,vitae,quam,congue,tristique,pretium,mauris,placerat,Nam,id,fermentum,justo,Praesent,lobortis,sollicitudin,neque,nec,pretium,arcu,porttitor,sit,amet,Sed,et,euismod,libero,imperdiet,sollicitudin,ligula,Curabitur,accumsan,eu,ante,sed,faucibus,Donec,placerat,eros,sit,amet,libero,interdum,in,varius,leo,porttitor,Mauris,non,congue,metus,nec,posuere,nulla,Vivamus,ex,leo,sollicitudin,iaculis,tincidunt,ac,aliquam,sed,urna
 Nulla,maximus,leo,accumsan,ut,lacinia,diam,nunc,lacus,elementum,eget,a,justo,at,ligula,dapibus,dictum,in,eu,justo,Maecenas,finibus,fringilla,laoreet,Mauris,nec,ante,semper,ultrices,lorem,ut,tincidunt,lacus,Morbi,dapibus,lobortis,efficitur
 Mauris,vel,purus,finibus,egestas,non,eu,hendrerit,augue,ut,cursus,imperdiet,ac,maximus,porttitor,In,et,velit,eleifend,dictum,turpis,et,interdum,metus,Phasellus,ligula,risus,fermentum,at,dui,pellentesque,mollis,ultricies,dui,Duis,et,faucibus,metus,Maecenas,cursus,tincidunt,finibus,Nunc,eget,aliquam,justo,Proin,eros,tortor,sollicitudin,semper,condimentum,sed,hendrerit,at,urna,Maecenas,lobortis,nisi,vel,scelerisque,tristique,eros,libero,condimentum,urna,vel,porta,mi,purus,id,tellus,In,vel,orci,nunc,Curabitur,tempus,vehicula,eros,sed,varius,Curabitur,luctus,ipsum,eget,hendrerit,volutpat,leo,sapien,convallis,mi,tempor,fringilla,metus,odio,cursus,metus
@@ -78,7 +78,7 @@ Maecenas,dapibus,dapibus,aliquam,Class,aptent,taciti,litora,torquent,per,conubia
 * Skip lines without delimiter
 * Use inverse / complement of fields specified
 ```
-shell> crust inputs/pipe.sv -d "|" -f -3,12-15,6-9,22,30- -s "," -c
+shell> slice inputs/pipe.sv -d "|" -f -3,12-15,6-9,22,30- -s "," -c
 lobortis,varius,nunc,Nulla,nisl,suscipit,sed,ultrices,nunc,ornare,sed,nisi,a,orci,luctus,venenatis,eget
 cursus,erat,elementum,Donec,justo,eget,congue,lobortis,felis,Quisque,lorem,nec,massa,faucibus,vestibulum,Maecenas,vel
 vel,dolor,tellus,Mauris,rutrum,Nunc,tincidunt,eros,non,ex,quis,mollis,lacus,mattis,Vestibulum,commodo,metus
@@ -105,7 +105,7 @@ diam,ut,sociosqu,ad,nostra,per,inceptos,himenaeos,Interdum,et,fames,ac,ante,ipsu
 * Include lines without delimiter
 * Use inverse / complement of fields specified
 ```
-shell> crust inputs/pipe.sv -d "|" -f -3,12-15,6-9,22,30- -s "," -c -n
+shell> slice inputs/pipe.sv -d "|" -f -3,12-15,6-9,22,30- -s "," -c -n
 lobortis,varius,nunc,Nulla,nisl,suscipit,sed,ultrices,nunc,ornare,sed,nisi,a,orci,luctus,venenatis,eget
 
 cursus,erat,elementum,Donec,justo,eget,congue,lobortis,felis,Quisque,lorem,nec,massa,faucibus,vestibulum,Maecenas,vel

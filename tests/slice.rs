@@ -1,4 +1,4 @@
-use crust::fields::FieldParser;
+use slice::fields::FieldParser;
 
 #[test]
 fn test_field_neg_all_commas() {

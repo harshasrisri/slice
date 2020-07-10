@@ -1,11 +1,9 @@
 [package]
-name = "crust"
+name = "slice"
 version = "0.1.0"
 authors = ["Sriharsha Mucheli <harshasrisri@gmail.com>"]
 edition = "2018"
-description = "This is yet another implementation of the 'cut' *nix utility written in rust."
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "An opinionated implementation of the 'cut' *nix utility to slice rows and columns of data."
 
 [dependencies]
 structopt = "0.3.9"

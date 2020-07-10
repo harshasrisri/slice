@@ -17,7 +17,7 @@ FIELD SPECIFICATION:
         -2,5-7,9-   => Extract fields 1,2,5,6,7,9,...
 "
 )]
-pub struct CrustOpts {
+pub struct SliceOpts {
     /// Fields to be extracted. See FIELD SPECIFICATION
     #[structopt(short, long, allow_hyphen_values = true)]
     pub fields: String,

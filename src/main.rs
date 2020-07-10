@@ -6,13 +6,13 @@ mod fields;
 use fields::FieldParser;
 
 mod args;
-use args::CrustOpts;
+use args::SliceOpts;
 
 mod split;
 use split::Splitter;
 
 fn main() {
-    let args = CrustOpts::from_args();
+    let args = SliceOpts::from_args();
     let parser = FieldParser::from_spec(&args.fields, args.complement);
     if parser.is_err() {
         eprintln!("Failed to parse fields");
