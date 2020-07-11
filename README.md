@@ -15,7 +15,7 @@ Not aiming to be performant(yet). Not aiming to have feature parity with `cut`(y
 Some [examples](examples.md) are included.
 
 ```
-slice 0.1.0
+slice 0.2.0
 An opinionated implementation of the 'cut' *nix utility to slice rows and columns of data.
 
 USAGE:
@@ -30,6 +30,7 @@ FLAGS:
 OPTIONS:
     -d, --delimiter <delimiter>    Delimiter to be used to split fields [default:  ]
     -f, --fields <fields>          Fields to be extracted. See FIELD SPECIFICATION
+    -r, --rows <rows>              Rows to be extracted. All, by default. See FIELD SPECIFICATION
     -s, --separator <separator>    Separator to use to print results [default:  ]
 
 ARGS:
