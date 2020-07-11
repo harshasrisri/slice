@@ -17,24 +17,20 @@ impl Splitter {
         }
     }
 
-    pub fn parse<'b>(&self, line: &'b str) -> Vec<&'b str> {
-        line.split(self.delimiter)
-            .filter(|&s| !s.is_empty())
-            .zip(self.fields.mask_iter())
-            .filter_map(|(word, allow)| if allow { Some(word) } else { None })
-            .collect::<Vec<_>>()
-    }
-
     pub fn parse_into<T>(&self, input: &str, mut output: &mut T) -> Result<(), std::fmt::Error>
     where
         T: Write,
     {
-        let slices = self.parse(input);
-        for slice in slices.iter().take(slices.len() - 1) {
-            write!(&mut output, "{}{}", slice, self.separator)?;
+        let mut slices = input
+            .split(self.delimiter)
+            .filter(|&s| !s.is_empty())
+            .zip(self.fields.mask_iter())
+            .filter_map(|(field, allow)| if allow { Some(field) } else { None });
+        if let Some(first) = slices.nth(0) {
+            write!(&mut output, "{}", first)?;
         }
-        if let Some(last) = slices.last() {
-            write!(&mut output, "{}", last)?;
+        for slice in slices {
+            write!(&mut output, "{}{}", self.separator, slice)?;
         }
         Ok(())
     }

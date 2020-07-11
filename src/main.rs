@@ -2,7 +2,7 @@ use slice::args::SliceOpts;
 use slice::fields::FieldSpecParser;
 use slice::split::Splitter;
 use std::fs::File;
-use std::io::{self, BufRead, BufReader};
+use std::io::{BufRead, BufReader};
 use structopt::StructOpt;
 
 fn main() {
@@ -29,13 +29,12 @@ fn main() {
 
     for file in args.files {
         let reader: Box<dyn BufRead> = match file.to_str() {
-            Some("-") => Box::new(BufReader::new(io::stdin())),
+            Some("-") => Box::new(BufReader::new(std::io::stdin())),
             Some(_) => {
                 if !file.exists() && !file.is_file() {
                     eprintln!("Invalid file: {}", file.to_str().unwrap_or_default());
                     std::process::exit(1);
                 }
-
                 Box::new(BufReader::new(File::open(file).unwrap()))
             }
             None => {
