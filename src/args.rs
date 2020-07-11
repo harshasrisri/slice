@@ -22,6 +22,10 @@ pub struct SliceOpts {
     #[structopt(short, long, allow_hyphen_values = true)]
     pub fields: String,
 
+    /// Rows to be extracted. All, by default. See FIELD SPECIFICATION
+    #[structopt(short, long, allow_hyphen_values = true)]
+    pub rows: Option<String>,
+
     /// Delimiter to be used to split fields
     #[structopt(short, long, parse(try_from_str = parse_for_tab), default_value = " ")]
     pub delimiter: char,

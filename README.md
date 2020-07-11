@@ -8,6 +8,7 @@ Not aiming to be performant(yet). Not aiming to have feature parity with `cut`(y
 * Doesn't have a bytes/chars mode of operation
 * Omits lines not containing a delimiter
 * Uses space as the delimiter(IFS) and the separator(OFS)
+* Trailing separators in input are not included in output
 
 ## Usage
 

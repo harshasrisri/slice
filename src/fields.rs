@@ -1,20 +1,16 @@
 use std::collections::BTreeSet;
 
 #[derive(Debug)]
-pub struct FieldParser {
+pub struct FieldSpecParser {
     fields: Vec<usize>,
     open: bool,
     complement: bool,
+    mask: Vec<bool>,
 }
 
-impl FieldParser {
+impl FieldSpecParser {
     pub fn from_spec(field_spec: &str, complement: bool) -> Result<Self, &str> {
-        let mut parser = FieldParser {
-            fields: Vec::new(),
-            open: false,
-            complement,
-        };
-        let error = Err("Invalid field specification");
+        let mut open = false;
 
         let mut spec = String::new();
         if field_spec.starts_with('-') {
@@ -22,11 +18,11 @@ impl FieldParser {
         }
         spec.push_str(&field_spec);
         if spec.ends_with('-') {
-            parser.open = true;
+            open = true;
             spec.push_str(usize::max_value().to_string().as_str());
         }
 
-        parser.fields = spec
+        let fields = spec
             .split(',')
             .filter(|s| !s.is_empty())
             .map(|interval| {
@@ -52,24 +48,35 @@ impl FieldParser {
                 }
             })
             .flatten()
-            .collect::<BTreeSet<usize>>()
+            .collect::<BTreeSet<_>>()
             .into_iter()
-            .collect();
+            .collect::<Vec<_>>();
 
-        if parser.fields.first().is_none() || parser.fields.first().unwrap() == &0 {
-            error
+        if fields.first().is_none() || fields.first().unwrap() == &0 {
+            return Err("Invalid field specification");
+        }
+
+        let last = *fields.last().unwrap();
+        let mask = (1..=last).map(|n| fields.binary_search(&n).is_ok() ^ complement).collect();
+        Ok(
+            FieldSpecParser {
+                fields,
+                open,
+                complement,
+                mask,
+            })
+    }
+
+    #[allow(dead_code)]
+    pub fn valid(&self, col: usize) -> bool {
+        self.complement ^ if col < self.mask.len() {
+            self.mask[col]
         } else {
-            Ok(parser)
+            self.open
         }
     }
 
-    pub fn valid_field(&self, col: usize) -> bool {
-        let mut res = self.fields.binary_search(&col).is_ok();
-        if self.open {
-            if let Some(last) = self.fields.last() {
-                res = res || (col >= *last);
-            }
-        }
-        res ^ self.complement
+    pub fn mask_iter(&self) -> impl Iterator<Item = bool> + '_ {
+        self.mask.iter().map(|m| *m).chain(std::iter::repeat(self.open ^ self.complement))
     }
 }

@@ -3,7 +3,7 @@ use std::io::{self, BufRead, BufReader};
 use structopt::StructOpt;
 
 mod fields;
-use fields::FieldParser;
+use fields::FieldSpecParser;
 
 mod args;
 use args::SliceOpts;
@@ -13,13 +13,14 @@ use split::Splitter;
 
 fn main() {
     let args = SliceOpts::from_args();
-    let parser = FieldParser::from_spec(&args.fields, args.complement);
-    if parser.is_err() {
+
+    let splitter = if let Ok(parser) = FieldSpecParser::from_spec(&args.fields, args.complement) {
+        Splitter::new(parser, args.delimiter, args.separator)
+    } else {
         eprintln!("Failed to parse fields");
         std::process::exit(1);
-    }
-    let parser = parser.unwrap();
-    let splitter = Splitter::new(&parser, args.delimiter, args.separator);
+    };
+
     let mut output_line = String::new();
 
     for file in args.files {

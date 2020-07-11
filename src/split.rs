@@ -1,15 +1,15 @@
-use crate::fields::FieldParser;
+use crate::fields::FieldSpecParser;
 use std::fmt::Write;
 
 #[derive(Debug)]
-pub struct Splitter<'a> {
-    fields: &'a FieldParser,
+pub struct Splitter {
+    fields: FieldSpecParser,
     delimiter: char,
     separator: char,
 }
 
-impl<'a> Splitter<'a> {
-    pub fn new(fields: &'a FieldParser, delimiter: char, separator: char) -> Self {
+impl Splitter {
+    pub fn new(fields: FieldSpecParser, delimiter: char, separator: char) -> Self {
         Splitter {
             fields,
             delimiter,
@@ -20,9 +20,9 @@ impl<'a> Splitter<'a> {
     pub fn parse<'b>(&self, line: &'b str) -> Vec<&'b str> {
         line.split(self.delimiter)
             .filter(|&s| !s.is_empty())
-            .enumerate()
-            .filter_map(|(i, word)| {
-                if self.fields.valid_field(i + 1) {
+            .zip(self.fields.mask_iter())
+            .filter_map(|(word, allow)| {
+                if allow {
                     Some(word)
                 } else {
                     None
