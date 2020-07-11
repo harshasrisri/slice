@@ -21,13 +21,7 @@ impl Splitter {
         line.split(self.delimiter)
             .filter(|&s| !s.is_empty())
             .zip(self.fields.mask_iter())
-            .filter_map(|(word, allow)| {
-                if allow {
-                    Some(word)
-                } else {
-                    None
-                }
-            })
+            .filter_map(|(word, allow)| if allow { Some(word) } else { None })
             .collect::<Vec<_>>()
     }
 

@@ -57,26 +57,38 @@ impl FieldSpecParser {
         }
 
         let last = *fields.last().unwrap();
-        let mask = (1..=last).map(|n| fields.binary_search(&n).is_ok() ^ complement).collect();
-        Ok(
-            FieldSpecParser {
-                fields,
-                open,
-                complement,
-                mask,
-            })
+        let mask = (1..=last)
+            .map(|n| fields.binary_search(&n).is_ok() ^ complement)
+            .collect();
+        Ok(FieldSpecParser {
+            fields,
+            open,
+            complement,
+            mask,
+        })
     }
 
     #[allow(dead_code)]
     pub fn valid(&self, col: usize) -> bool {
-        self.complement ^ if col < self.mask.len() {
-            self.mask[col]
-        } else {
-            self.open
-        }
+        let col = col - 1;
+        self.complement
+            ^ if col < self.mask.len() {
+                self.mask[col]
+            } else {
+                self.open
+            }
     }
 
     pub fn mask_iter(&self) -> impl Iterator<Item = bool> + '_ {
-        self.mask.iter().map(|m| *m).chain(std::iter::repeat(self.open ^ self.complement))
+        self.mask
+            .iter()
+            .map(|m| *m)
+            .chain(std::iter::repeat(self.open ^ self.complement))
+    }
+
+    pub fn into_mask_iter(self) -> impl Iterator<Item = bool> {
+        self.mask
+            .into_iter()
+            .chain(std::iter::repeat(self.open ^ self.complement))
     }
 }

@@ -1,15 +1,9 @@
+use slice::args::SliceOpts;
+use slice::fields::FieldSpecParser;
+use slice::split::Splitter;
 use std::fs::File;
 use std::io::{self, BufRead, BufReader};
 use structopt::StructOpt;
-
-mod fields;
-use fields::FieldSpecParser;
-
-mod args;
-use args::SliceOpts;
-
-mod split;
-use split::Splitter;
 
 fn main() {
     let args = SliceOpts::from_args();
@@ -17,11 +11,21 @@ fn main() {
     let splitter = if let Ok(parser) = FieldSpecParser::from_spec(&args.fields, args.complement) {
         Splitter::new(parser, args.delimiter, args.separator)
     } else {
-        eprintln!("Failed to parse fields");
+        eprintln!("Failed to parse field spec");
         std::process::exit(1);
     };
 
     let mut output_line = String::new();
+    let mut rows_iter: Box<dyn Iterator<Item = bool>> = if let Some(rows) = args.rows {
+        if let Ok(row_spec) = FieldSpecParser::from_spec(&rows, false) {
+            Box::new(row_spec.into_mask_iter())
+        } else {
+            eprintln!("Failed to parse row spec");
+            std::process::exit(1);
+        }
+    } else {
+        Box::new(std::iter::repeat(true))
+    };
 
     for file in args.files {
         let reader: Box<dyn BufRead> = match file.to_str() {
@@ -40,9 +44,16 @@ fn main() {
             }
         };
 
-        for line in reader.lines().filter_map(|line| line.ok()) {
+        for line in rows_iter
+            .by_ref()
+            .zip(reader.lines())
+            .filter_map(|(use_line, line)| if use_line { Some(line) } else { None })
+        {
+            let line = line.expect("Error reading input");
             output_line.clear();
-            splitter.parse_into(&line, &mut output_line).expect("");
+            splitter
+                .parse_into(&line, &mut output_line)
+                .expect("Error parsing input");
             if output_line.is_empty() && !args.non_delimited {
                 continue;
             }
