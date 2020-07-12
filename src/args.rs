@@ -31,8 +31,8 @@ pub struct SliceOpts {
     pub delimiter: char,
 
     /// Separator to use to print results
-    #[structopt(short, long, parse(try_from_str = parse_for_tab), default_value = " ")]
-    pub separator: char,
+    #[structopt(short, long, default_value = " ")]
+    pub separator: String,
 
     /// Include lines that don't contain a delimiter
     #[structopt(short, long)]

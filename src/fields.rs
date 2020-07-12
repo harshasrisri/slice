@@ -72,8 +72,8 @@ impl FieldSpecParser {
     pub fn valid(&self, col: usize) -> bool {
         let col = col - 1;
         self.complement
-            ^ if col < self.mask.len() {
-                self.mask[col]
+            ^ if let Some(value) = self.mask.get(col) {
+                *value
             } else {
                 self.open
             }

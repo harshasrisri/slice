@@ -5,11 +5,11 @@ use std::fmt::Write;
 pub struct Splitter {
     fields: FieldSpecParser,
     delimiter: char,
-    separator: char,
+    separator: String,
 }
 
 impl Splitter {
-    pub fn new(fields: FieldSpecParser, delimiter: char, separator: char) -> Self {
+    pub fn new(fields: FieldSpecParser, delimiter: char, separator: String) -> Self {
         Splitter {
             fields,
             delimiter,
@@ -21,17 +21,16 @@ impl Splitter {
     where
         T: Write,
     {
-        let mut slices = input
-            .split(self.delimiter)
-            .filter(|&s| !s.is_empty())
-            .zip(self.fields.mask_iter())
-            .filter_map(|(field, allow)| if allow { Some(field) } else { None });
-        if let Some(first) = slices.nth(0) {
-            write!(&mut output, "{}", first)?;
-        }
-        for slice in slices {
-            write!(&mut output, "{}{}", self.separator, slice)?;
-        }
-        Ok(())
+        write!(
+            &mut output,
+            "{}",
+            input
+                .split(self.delimiter)
+                .filter(|&s| !s.is_empty())
+                .zip(self.fields.mask_iter())
+                .filter_map(|(field, allow)| if allow { Some(field) } else { None })
+                .collect::<Vec<_>>()
+                .join(&self.separator)
+        )
     }
 }
