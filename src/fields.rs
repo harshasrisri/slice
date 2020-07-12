@@ -82,7 +82,7 @@ impl FieldSpecParser {
     pub fn mask_iter(&self) -> impl Iterator<Item = bool> + '_ {
         self.mask
             .iter()
-            .map(|m| *m)
+            .copied()
             .chain(std::iter::repeat(self.open ^ self.complement))
     }
 
