@@ -1,21 +1,22 @@
 # Slice
 
-Wrote as a project to scratch an itch that `cut` utility was a tad bit unintuitive. 
+I wrote this to scratch an itch that `cut` utility was a tad bit unintuitive. In the process, I got to address another pet peeve of mine that there is no easy tool to filter rows based on row numbers.
 
-Not aiming to be performant(yet). Not aiming to have feature parity with `cut`(yet). Just to have a close approximation with a different set of defaults.
+Not aiming to be performant(yet), although the performance is only slightly worse than `cut`. Not aiming to have feature parity with `cut`(yet), but just to have a close approximation with a different set of defaults.
 
 ## Default behavior
 * Doesn't have a bytes/chars mode of operation
 * Omits lines not containing a delimiter
 * Uses space as the delimiter(IFS) and the separator(OFS)
 * Trailing separators in input are not included in output
+* Treats consecutive separators as one (not configurable at the moment)
 
 ## Usage
 
 Some [examples](examples.md) are included.
 
 ```
-slice 0.2.0
+slice 0.3.0
 An opinionated implementation of the 'cut' *nix utility to slice rows and columns of data.
 
 USAGE:
