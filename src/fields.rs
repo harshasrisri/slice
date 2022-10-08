@@ -34,7 +34,7 @@ impl FieldSpecParser {
         }
 
         self.fields = spec
-            .split(',')
+            .split(&self.range_separator)
             .filter(|s| !s.is_empty())
             .flat_map(|interval| {
                 let interval = interval
