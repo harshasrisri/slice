@@ -13,7 +13,7 @@ pub struct FieldSpecParser {
 
 impl Default for FieldSpecParser {
     fn default() -> Self {
-        FieldSpecParser::builder().finish()
+        FieldSpecParser::builder().build()
     }
 }
 
@@ -123,7 +123,7 @@ impl FieldSpecParserBuilder {
         self
     }
 
-    pub fn finish(self) -> FieldSpecParser {
+    pub fn build(self) -> FieldSpecParser {
         let start_index = self.start_index.unwrap_or_default();
         let complement = self.complement.unwrap_or_default();
         let range_separator = self.range_separator.unwrap_or_else(|| "-".to_string());

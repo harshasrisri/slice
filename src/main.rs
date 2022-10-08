@@ -113,7 +113,7 @@ fn main() {
         .with_range_separator(args.range_separator)
         .with_interval_separator(args.interval_separator)
         .with_start_index(args.start_index)
-        .finish();
+        .build();
 
     let splitter = if let Err(e) = parser.from_spec(&args.fields) {
         eprintln!("Failed to parse field spec: {}", e);
