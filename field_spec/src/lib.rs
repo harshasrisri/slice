@@ -1,4 +1,48 @@
-use std::collections::BTreeSet;
+#[derive(Default)]
+pub struct FieldSpecParserBuilder {
+    start_index: Option<usize>,
+    complement: Option<bool>,
+    range_separator: Option<String>,
+    interval_separator: Option<String>,
+}
+
+impl FieldSpecParserBuilder {
+    pub fn with_start_index(mut self, index: usize) -> Self {
+        self.start_index = Some(index);
+        self
+    }
+
+    pub fn inverse_match(mut self, complement: bool) -> Self {
+        self.complement = Some(complement);
+        self
+    }
+
+    pub fn with_range_separator(mut self, range_separator: String) -> Self {
+        self.range_separator = Some(range_separator);
+        self
+    }
+
+    pub fn with_interval_separator(mut self, interval_separator: String) -> Self {
+        self.interval_separator = Some(interval_separator);
+        self
+    }
+
+    pub fn build(self) -> FieldSpecParser {
+        let start_index = self.start_index.unwrap_or_default();
+        let complement = self.complement.unwrap_or_default();
+        let range_separator = self.range_separator.unwrap_or_else(|| "-".to_string());
+        let interval_separator = self.interval_separator.unwrap_or_else(|| ",".to_string());
+        FieldSpecParser {
+            fields: Vec::new(),
+            open: false,
+            mask: Vec::new(),
+            start_index,
+            complement,
+            range_separator,
+            interval_separator,
+        }
+    }
+}
 
 #[derive(Debug)]
 pub struct FieldSpecParser {
@@ -53,9 +97,10 @@ impl FieldSpecParser {
                     _ => vec![0],
                 }
             })
-            .collect::<BTreeSet<_>>()
-            .into_iter()
             .collect::<Vec<_>>();
+
+        self.fields.sort();
+        self.fields.dedup();
 
         if self.fields.first().is_none() || self.fields.first().unwrap() < &self.start_index {
             return Err("Invalid field specification");
@@ -69,7 +114,6 @@ impl FieldSpecParser {
         Ok(())
     }
 
-    #[allow(dead_code)]
     pub fn valid(&self, col: usize) -> bool {
         let col = col - self.start_index;
         self.complement
@@ -91,51 +135,5 @@ impl FieldSpecParser {
         self.mask
             .into_iter()
             .chain(std::iter::repeat(self.open ^ self.complement))
-    }
-}
-
-#[derive(Default)]
-pub struct FieldSpecParserBuilder {
-    start_index: Option<usize>,
-    complement: Option<bool>,
-    range_separator: Option<String>,
-    interval_separator: Option<String>,
-}
-
-impl FieldSpecParserBuilder {
-    pub fn with_start_index(mut self, index: usize) -> Self {
-        self.start_index = Some(index);
-        self
-    }
-
-    pub fn inverse_match(mut self, complement: bool) -> Self {
-        self.complement = Some(complement);
-        self
-    }
-
-    pub fn with_range_separator(mut self, range_separator: String) -> Self {
-        self.range_separator = Some(range_separator);
-        self
-    }
-
-    pub fn with_interval_separator(mut self, interval_separator: String) -> Self {
-        self.interval_separator = Some(interval_separator);
-        self
-    }
-
-    pub fn build(self) -> FieldSpecParser {
-        let start_index = self.start_index.unwrap_or_default();
-        let complement = self.complement.unwrap_or_default();
-        let range_separator = self.range_separator.unwrap_or_else(|| "-".to_string());
-        let interval_separator = self.interval_separator.unwrap_or_else(|| ",".to_string());
-        FieldSpecParser {
-            fields: Vec::new(),
-            open: false,
-            mask: Vec::new(),
-            start_index,
-            complement,
-            range_separator,
-            interval_separator,
-        }
     }
 }

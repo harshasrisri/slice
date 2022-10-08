@@ -1,8 +1,7 @@
-use std::fmt::Write;
 use field_spec::FieldSpecParser;
+use std::fmt::Write;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
-use std::char::ParseCharError;
 use std::path::PathBuf;
 use std::str::FromStr;
 use structopt::StructOpt;
@@ -63,7 +62,7 @@ pub struct SliceOpts {
     pub files: Vec<PathBuf>,
 }
 
-fn parse_for_tab(src: &str) -> Result<char, ParseCharError> {
+fn parse_for_tab(src: &str) -> Result<char, std::char::ParseCharError> {
     if src == "\\t" {
         Ok('\t')
     } else {
@@ -88,21 +87,21 @@ impl Splitter {
     }
 
     pub fn parse_into<T>(&self, input: &str, mut output: &mut T) -> Result<(), std::fmt::Error>
-        where
+    where
         T: Write,
-        {
-            write!(
-                &mut output,
-                "{}",
-                input
+    {
+        write!(
+            &mut output,
+            "{}",
+            input
                 .split(self.delimiter)
                 .filter(|&s| !s.is_empty())
                 .zip(self.fields.mask_iter())
                 .filter_map(|(field, allow)| if allow { Some(field) } else { None })
                 .collect::<Vec<_>>()
                 .join(&self.separator)
-                )
-        }
+        )
+    }
 }
 
 fn main() {
