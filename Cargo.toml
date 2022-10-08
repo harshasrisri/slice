@@ -7,3 +7,4 @@ description = "An opinionated implementation of the 'cut' *nix utility to slice 
 
 [dependencies]
 structopt = "0.3.9"
+field_spec = { path = "field_spec" }
