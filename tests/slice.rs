@@ -2,68 +2,84 @@ use slice::fields::FieldSpecParser;
 
 #[test]
 fn test_field_neg_all_commas() {
-    assert!(FieldSpecParser::from_spec(",,,,,,,", false).is_err());
+    assert!(FieldSpecParser::default().from_spec(",,,,,,,").is_err());
 }
 
 #[test]
 fn test_field_neg_all_hyphens() {
-    assert!(FieldSpecParser::from_spec("-------", false).is_err());
+    assert!(FieldSpecParser::default().from_spec("-------").is_err());
 }
 
 #[test]
 fn test_field_neg_empty_field_spec() {
-    assert!(FieldSpecParser::from_spec("", false).is_err());
+    assert!(FieldSpecParser::default().from_spec("").is_err());
 }
 
 #[test]
 fn test_field_neg_two_leading_hyphens() {
-    assert!(FieldSpecParser::from_spec("--4,5-6,7-", false).is_err());
-    assert!(FieldSpecParser::from_spec("--,5-6,7-", false).is_err());
+    assert!(FieldSpecParser::default().from_spec("--4,5-6,7-").is_err());
+    assert!(FieldSpecParser::default().from_spec("--,5-6,7-").is_err());
 }
 
 #[test]
 fn test_field_neg_two_trailing_hyphens() {
-    assert!(FieldSpecParser::from_spec("-4,5-6,7--", false).is_err());
-    assert!(FieldSpecParser::from_spec("-4,5-6,--", false).is_err());
+    assert!(FieldSpecParser::default().from_spec("-4,5-6,7--").is_err());
+    assert!(FieldSpecParser::default().from_spec("-4,5-6,--").is_err());
 }
 
 #[test]
 fn test_field_neg_two_hyphens_in_range() {
-    assert!(FieldSpecParser::from_spec("-4,5--6,7-", false).is_err());
+    assert!(FieldSpecParser::default().from_spec("-4,5--6,7-").is_err());
 }
 
 #[test]
 fn test_field_neg_more_than_two_parts_in_range() {
-    assert!(FieldSpecParser::from_spec("-4,5-6-7,8-", false).is_err());
-    assert!(FieldSpecParser::from_spec("-4,5-6-7-8,9-", false).is_err());
+    assert!(FieldSpecParser::default().from_spec("-4,5-6-7,8-").is_err());
+    assert!(FieldSpecParser::default()
+        .from_spec("-4,5-6-7-8,9-")
+        .is_err());
 }
 
 #[test]
 fn test_field_neg_open_ranges_in_middle() {
-    assert!(FieldSpecParser::from_spec("-4,5-6,7-8,9-,10", false).is_err());
-    assert!(FieldSpecParser::from_spec("2,-4,5-6,7-8,10", false).is_err());
+    assert!(FieldSpecParser::default()
+        .from_spec("-4,5-6,7-8,9-,10")
+        .is_err());
+    assert!(FieldSpecParser::default()
+        .from_spec("2,-4,5-6,7-8,10")
+        .is_err());
 }
 
 #[test]
 fn test_field_neg_invalid_ranges_in_start() {
-    assert!(FieldSpecParser::from_spec("2-,3-4,5-6,7-8,10", false).is_err());
-    assert!(FieldSpecParser::from_spec("-2-4,5-6,7-8,10", false).is_err());
-    assert!(FieldSpecParser::from_spec("-,5-6,7-8,10", false).is_err());
+    assert!(FieldSpecParser::default()
+        .from_spec("2-,3-4,5-6,7-8,10")
+        .is_err());
+    assert!(FieldSpecParser::default()
+        .from_spec("-2-4,5-6,7-8,10")
+        .is_err());
+    assert!(FieldSpecParser::default()
+        .from_spec("-,5-6,7-8,10")
+        .is_err());
 }
 
 #[test]
 fn test_field_neg_invalid_ranges_in_end() {
-    assert!(FieldSpecParser::from_spec("-4,5-6,7-8,-10", false).is_err());
-    assert!(FieldSpecParser::from_spec("-3,5-6,7-8,10-12-", false).is_err());
-    assert!(FieldSpecParser::from_spec("-4,5-6,7-8,-", false).is_err());
+    assert!(FieldSpecParser::default()
+        .from_spec("-4,5-6,7-8,-10")
+        .is_err());
+    assert!(FieldSpecParser::default()
+        .from_spec("-3,5-6,7-8,10-12-")
+        .is_err());
+    assert!(FieldSpecParser::default()
+        .from_spec("-4,5-6,7-8,-")
+        .is_err());
 }
 
 #[test]
 fn test_field_simple_sequence() {
-    let field = FieldSpecParser::from_spec("1,2,3,4,5,6", false);
-    assert!(field.is_ok());
-
-    let field = field.unwrap();
+    let mut field = FieldSpecParser::default();
+    assert!(field.from_spec("1,2,3,4,5,6").is_ok());
 
     assert!(field.valid(1));
     assert!(field.valid(3));
@@ -76,10 +92,8 @@ fn test_field_simple_sequence() {
 
 #[test]
 fn test_field_ordered_scatterred_numbers() {
-    let field = FieldSpecParser::from_spec("2,6,9", false);
-    assert!(field.is_ok());
-
-    let field = field.unwrap();
+    let mut field = FieldSpecParser::default();
+    assert!(field.from_spec("2,6,9").is_ok());
 
     assert!(field.valid(2));
     assert!(field.valid(6));
@@ -93,10 +107,8 @@ fn test_field_ordered_scatterred_numbers() {
 
 #[test]
 fn test_field_unordered_scatterred_numbers() {
-    let field = FieldSpecParser::from_spec("9,2,6", false);
-    assert!(field.is_ok());
-
-    let field = field.unwrap();
+    let mut field = FieldSpecParser::default();
+    assert!(field.from_spec("9,2,6").is_ok());
 
     assert!(field.valid(2));
     assert!(field.valid(6));
@@ -110,10 +122,8 @@ fn test_field_unordered_scatterred_numbers() {
 
 #[test]
 fn test_field_single_leading_hyphen() {
-    let field = FieldSpecParser::from_spec("-4,5", false);
-    assert!(field.is_ok());
-
-    let field = field.unwrap();
+    let mut field = FieldSpecParser::default();
+    assert!(field.from_spec("-4,5").is_ok());
 
     assert!(field.valid(1));
     assert!(field.valid(3));
@@ -125,10 +135,8 @@ fn test_field_single_leading_hyphen() {
 
 #[test]
 fn test_field_single_trailing_hyphen() {
-    let field = FieldSpecParser::from_spec("6,7-", false);
-    assert!(field.is_ok());
-
-    let field = field.unwrap();
+    let mut field = FieldSpecParser::default();
+    assert!(field.from_spec("6,7-").is_ok());
 
     assert!(!field.valid(1));
     assert!(!field.valid(3));
@@ -142,10 +150,8 @@ fn test_field_single_trailing_hyphen() {
 
 #[test]
 fn test_field_single_range() {
-    let field = FieldSpecParser::from_spec("6-12", false);
-    assert!(field.is_ok());
-
-    let field = field.unwrap();
+    let mut field = FieldSpecParser::default();
+    assert!(field.from_spec("6-12").is_ok());
 
     assert!(!field.valid(4));
     assert!(!field.valid(5));
@@ -160,10 +166,8 @@ fn test_field_single_range() {
 
 #[test]
 fn test_field_ordered_ranges() {
-    let field = FieldSpecParser::from_spec("6-12,20-31", false);
-    assert!(field.is_ok());
-
-    let field = field.unwrap();
+    let mut field = FieldSpecParser::default();
+    assert!(field.from_spec("6-12,20-31").is_ok());
 
     assert!(!field.valid(4));
     assert!(!field.valid(5));
@@ -185,10 +189,8 @@ fn test_field_ordered_ranges() {
 
 #[test]
 fn test_field_unordered_ranges() {
-    let field = FieldSpecParser::from_spec("20-31,6-12", false);
-    assert!(field.is_ok());
-
-    let field = field.unwrap();
+    let mut field = FieldSpecParser::default();
+    assert!(field.from_spec("20-31,6-12").is_ok());
 
     assert!(!field.valid(4));
     assert!(!field.valid(5));
@@ -210,10 +212,8 @@ fn test_field_unordered_ranges() {
 
 #[test]
 fn test_field_overlapping_ranges() {
-    let field = FieldSpecParser::from_spec("10-16,6-12", false);
-    assert!(field.is_ok());
-
-    let field = field.unwrap();
+    let mut field = FieldSpecParser::default();
+    assert!(field.from_spec("10-16,6-12").is_ok());
 
     assert!(!field.valid(4));
     assert!(!field.valid(5));
@@ -231,10 +231,8 @@ fn test_field_overlapping_ranges() {
 
 #[test]
 fn test_field_range_and_numbers() {
-    let field = FieldSpecParser::from_spec("3,6-12,17", false);
-    assert!(field.is_ok());
-
-    let field = field.unwrap();
+    let mut field = FieldSpecParser::default();
+    assert!(field.from_spec("3,6-12,17").is_ok());
 
     assert!(field.valid(3));
 
@@ -253,10 +251,8 @@ fn test_field_range_and_numbers() {
 
 #[test]
 fn test_field_range_and_numbers_open() {
-    let field = FieldSpecParser::from_spec("-3,6-12,17-", false);
-    assert!(field.is_ok());
-
-    let field = field.unwrap();
+    let mut field = FieldSpecParser::default();
+    assert!(field.from_spec("-3,6-12,17-").is_ok());
 
     assert!(field.valid(1));
     assert!(field.valid(3));
@@ -277,10 +273,8 @@ fn test_field_range_and_numbers_open() {
 
 #[test]
 fn test_field_complex_spec() {
-    let field = FieldSpecParser::from_spec("-3,12-15,,7-9,,5,14-17,19-", false);
-    assert!(field.is_ok());
-
-    let field = field.unwrap();
+    let mut field = FieldSpecParser::default();
+    assert!(field.from_spec("-3,12-15,,7-9,,5,14-17,19-").is_ok());
 
     assert!(field.valid(1));
     assert!(field.valid(3));
