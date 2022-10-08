@@ -8,25 +8,33 @@ use structopt::StructOpt;
 fn main() {
     let args = SliceOpts::from_args();
 
-    let splitter = if let Ok(parser) = FieldSpecParser::from_spec(&args.fields, args.complement) {
-        Splitter::new(parser, args.delimiter, args.separator)
-    } else {
-        eprintln!("Failed to parse field spec");
+    let mut parser = FieldSpecParser::builder()
+        .inverse_match(args.complement)
+        .with_range_separator(args.range_separator)
+        .with_interval_separator(args.interval_separator)
+        .with_start_index(args.start_index)
+        .finish();
+
+    let splitter = if let Err(e) = parser.from_spec(&args.fields) {
+        eprintln!("Failed to parse field spec: {}", e);
         std::process::exit(1);
+    } else {
+        Splitter::new(parser, args.delimiter, args.separator)
     };
 
-    let mut output_line = String::new();
     let mut rows_iter: Box<dyn Iterator<Item = bool>> = if let Some(rows) = args.rows {
-        if let Ok(row_spec) = FieldSpecParser::from_spec(&rows, false) {
-            Box::new(row_spec.into_mask_iter())
-        } else {
-            eprintln!("Failed to parse row spec");
+        let mut row_parser: FieldSpecParser = Default::default();
+        if let Err(e) = row_parser.from_spec(&rows) {
+            eprintln!("Failed to parse row spec: {}", e);
             std::process::exit(1);
+        } else {
+            Box::new(row_parser.into_mask_iter())
         }
     } else {
         Box::new(std::iter::repeat(true))
     };
 
+    let mut output_line = String::new();
     for file in args.files {
         let reader: Box<dyn BufRead> = match file.to_str() {
             Some("-") => Box::new(BufReader::new(std::io::stdin())),

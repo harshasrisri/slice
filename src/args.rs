@@ -22,6 +22,18 @@ pub struct SliceOpts {
     #[structopt(short, long, allow_hyphen_values = true)]
     pub fields: String,
 
+    /// Start index of field separation
+    #[structopt(short = "S", long, default_value = "0")]
+    pub start_index: usize,
+
+    /// Interval  separator in field specification
+    #[structopt(short, long, default_value = ",")]
+    pub interval_separator: String,
+
+    /// Range  separator in field specification
+    #[structopt(short, long, default_value = "-")]
+    pub range_separator: String,
+
     /// Rows to be extracted. All, by default. See FIELD SPECIFICATION
     #[structopt(short, long, allow_hyphen_values = true)]
     pub rows: Option<String>,
