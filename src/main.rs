@@ -1,13 +1,14 @@
+use clap::Parser;
 use field_spec::FieldSpecParser;
 use std::fmt::Write;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
 use std::str::FromStr;
-use structopt::StructOpt;
 
-#[derive(StructOpt, Debug)]
-#[structopt(
+#[derive(Parser)]
+#[command(
+    author,
     about,
     after_help = "
 FIELD SPECIFICATION:
@@ -22,43 +23,43 @@ FIELD SPECIFICATION:
 )]
 pub struct SliceOpts {
     /// Fields to be extracted. See FIELD SPECIFICATION
-    #[structopt(short, long, allow_hyphen_values = true)]
+    #[arg(short, long, allow_hyphen_values = true)]
     pub fields: String,
 
     /// Start index of field separation
-    #[structopt(short = "S", long, default_value = "0")]
+    #[arg(short = 'S', long, default_value = "0")]
     pub start_index: usize,
 
     /// Interval  separator in field specification
-    #[structopt(short, long, default_value = ",")]
+    #[arg(short, long, default_value = ",")]
     pub interval_separator: String,
 
     /// Range  separator in field specification
-    #[structopt(short, long, default_value = "-")]
+    #[arg(short, long, default_value = "-")]
     pub range_separator: String,
 
     /// Rows to be extracted. All, by default. See FIELD SPECIFICATION
-    #[structopt(short, long, allow_hyphen_values = true)]
+    #[arg(short, long, allow_hyphen_values = true)]
     pub rows: Option<String>,
 
     /// Delimiter to be used to split fields
-    #[structopt(short, long, parse(try_from_str = parse_for_tab), default_value = " ")]
+    #[arg(short, long, value_parser(parse_for_tab), default_value = " ")]
     pub delimiter: char,
 
     /// Separator to use to print results
-    #[structopt(short, long, default_value = " ")]
+    #[arg(short, long, default_value = " ")]
     pub separator: String,
 
     /// Include lines that don't contain a delimiter
-    #[structopt(short, long)]
+    #[arg(short, long)]
     pub non_delimited: bool,
 
     /// Complement field spec. Print all fields but those specified with -f
-    #[structopt(short, long)]
+    #[arg(short, long)]
     pub complement: bool,
 
     /// Files to process
-    #[structopt(name = "FILES", parse(from_os_str), default_value = "-")]
+    #[arg(name = "FILES", default_value = "-")]
     pub files: Vec<PathBuf>,
 }
 
@@ -105,7 +106,7 @@ impl Splitter {
 }
 
 fn main() {
-    let args = SliceOpts::from_args();
+    let args = SliceOpts::parse();
 
     let mut parser = FieldSpecParser::builder()
         .inverse_match(args.complement)
