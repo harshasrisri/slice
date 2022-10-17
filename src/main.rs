@@ -9,6 +9,7 @@ use std::str::FromStr;
 #[derive(Parser)]
 #[command(
     author,
+    version,
     about,
     after_help = "
 FIELD SPECIFICATION:
@@ -25,18 +26,6 @@ pub struct SliceOpts {
     /// Fields to be extracted. See FIELD SPECIFICATION
     #[arg(short, long, allow_hyphen_values = true)]
     pub fields: String,
-
-    /// Start index of field separation
-    #[arg(short = 'S', long, default_value = "0")]
-    pub start_index: usize,
-
-    /// Interval  separator in field specification
-    #[arg(short, long, default_value = ",")]
-    pub interval_separator: String,
-
-    /// Range  separator in field specification
-    #[arg(short, long, default_value = "-")]
-    pub range_separator: String,
 
     /// Rows to be extracted. All, by default. See FIELD SPECIFICATION
     #[arg(short, long, allow_hyphen_values = true)]
@@ -110,9 +99,9 @@ fn main() {
 
     let mut parser = FieldSpecParser::builder()
         .inverse_match(args.complement)
-        .with_range_separator(args.range_separator)
-        .with_interval_separator(args.interval_separator)
-        .with_start_index(args.start_index)
+        .with_range_separator("-".to_string())
+        .with_interval_separator("-".to_string())
+        .with_start_index(1)
         .build();
 
     let splitter = if let Err(e) = parser.from_spec(&args.fields) {
