@@ -1,6 +1,6 @@
 [package]
 name = "slice"
-version = "0.3.0"
+version = "0.4.0"
 authors = ["Sriharsha Mucheli <harshasrisri@gmail.com>"]
 edition = "2021"
 description = "An opinionated implementation of the 'cut' *nix utility to slice rows and columns of data."

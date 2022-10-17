@@ -14,28 +14,25 @@ Not aiming to be performant(yet), although the performance is only slightly wors
 ## Usage
 
 Some [examples](examples.md) are included.
-
+<!-- `$ echo \$ slice --help && cargo run --quiet --release -- --help` -->
 ```
-slice 0.3.0
+$ slice --help
 An opinionated implementation of the 'cut' *nix utility to slice rows and columns of data.
 
-USAGE:
-    slice [FLAGS] [OPTIONS] --fields <fields> [FILES]...
+Usage: slice [OPTIONS] --fields <FIELDS> [FILES]...
 
-FLAGS:
-    -c, --complement       Complement field spec. Print all fields but those specified with -f
-    -h, --help             Prints help information
-    -n, --non-delimited    Include lines that don't contain a delimiter
-    -V, --version          Prints version information
+Arguments:
+  [FILES]...  Files to process [default: -]
 
-OPTIONS:
-    -d, --delimiter <delimiter>    Delimiter to be used to split fields [default:  ]
-    -f, --fields <fields>          Fields to be extracted. See FIELD SPECIFICATION
-    -r, --rows <rows>              Rows to be extracted. All, by default. See FIELD SPECIFICATION
-    -s, --separator <separator>    Separator to use to print results [default:  ]
-
-ARGS:
-    <FILES>...    Files to process [default: -]
+Options:
+  -f, --fields <FIELDS>        Fields to be extracted. See FIELD SPECIFICATION
+  -r, --rows <ROWS>            Rows to be extracted. All, by default. See FIELD SPECIFICATION
+  -d, --delimiter <DELIMITER>  Delimiter to be used to split fields [default: " "]
+  -s, --separator <SEPARATOR>  Separator to use to print results [default: " "]
+  -n, --non-delimited          Include lines that don't contain a delimiter
+  -c, --complement             Complement field spec. Print all fields but those specified with -f
+  -h, --help                   Print help information
+  -V, --version                Print version information
 
 
 FIELD SPECIFICATION:
