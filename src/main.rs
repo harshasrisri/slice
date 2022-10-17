@@ -98,9 +98,9 @@ fn main() {
     let args = SliceOpts::parse();
 
     let mut parser = FieldSpecParser::builder()
-        .inverse_match(args.complement)
+        .complement(args.complement)
         .with_range_separator("-".to_string())
-        .with_interval_separator("-".to_string())
+        .with_interval_separator(",".to_string())
         .with_start_index(1)
         .build();
 

@@ -12,7 +12,7 @@ impl FieldSpecParserBuilder {
         self
     }
 
-    pub fn inverse_match(mut self, complement: bool) -> Self {
+    pub fn complement(mut self, complement: bool) -> Self {
         self.complement = Some(complement);
         self
     }
