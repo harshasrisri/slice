@@ -78,11 +78,11 @@ impl FieldSpecParser {
         }
 
         self.fields = spec
-            .split(&self.range_separator)
+            .split(&self.interval_separator)
             .filter(|s| !s.is_empty())
             .flat_map(|interval| {
                 let interval = interval
-                    .split(&self.interval_separator)
+                    .split(&self.range_separator)
                     .map(|num| num.parse().unwrap_or_default())
                     .collect::<Vec<usize>>();
                 match interval.len() {
