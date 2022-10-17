@@ -44,3 +44,19 @@ FIELD SPECIFICATION:
         2,4,6       => Extract only fields 2, 4 and 6
         -2,5-7,9-   => Extract fields 1,2,5,6,7,9,...
 ```
+
+## Performance
+
+Performance measured using `hyperfine`:
+```
+hyperfine --export-markdown hyf.md -Nw 5 -r 1000 \
+    'slice inputs/pipe.txt -d "|" -f -3,12-15,6-9,22,30- -s ","' \
+    'cut -d "|" -f -3,12-15,6-9,22,30- inputs/pipe.txt'
+```
+
+`cut` is still faster than `slice`. Someday, I hope to make `slice` more performant.
+
+| Command                                                                     | Mean [ms] | Min [ms] | Max [ms] | Relative    |
+| :---                                                                        | ---:      | ---:     | ---:     | ---:        |
+| `cut -d ""\| -f -3,12-15,6-9,22,30- --output-delimiter "," inputs/pipe.txt` | 3.7 ± 0.7 | 3.1      | 6.7      | 1.00        |
+| `slice inputs/pipe.txt -d "\|" -f -3,12-15,6-9,22,30- -s ","`               | 4.2 ± 0.3 | 3.9      | 7.6      | 1.16 ± 0.24 |
