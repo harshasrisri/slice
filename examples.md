@@ -7,8 +7,9 @@ The following options apply to all examples:
 ## First
 * Skip lines without delimiter
 * Use fields specified as-is
+<!-- `$ echo \$ slice inputs/small_pipe.txt -d "|" -f -3,12-15,6-9,22,30- -s "," && cargo run --quiet --release -- inputs/small_pipe.txt -d "|" -f -3,12-15,6-9,22,30- -s ","` -->
 ```
-shell> slice inputs/pipe.sv -d "|" -f -3,12-15,6-9,22,30- -s ","
+$ slice inputs/small_pipe.txt -d | -f -3,12-15,6-9,22,30- -s ,
 Suspendisse,blandit,eros,luctus,Donec,at,egestas,egestas,nunc,sit,amet,Duis,id,turpis,Maecenas,rhoncus,bibendum,mi,eget,tristique,erat,vehicula,et,Duis,ultricies,laoreet,massa,Duis,ullamcorper,justo,eget,diam,mattis,ac,tincidunt,odio,suscipit,Aenean,feugiat,purus,vitae,quam,congue,tristique,pretium,mauris,placerat,Nam,id,fermentum,justo,Praesent,lobortis,sollicitudin,neque,nec,pretium,arcu,porttitor,sit,amet,Sed,et,euismod,libero,imperdiet,sollicitudin,ligula,Curabitur,accumsan,eu,ante,sed,faucibus,Donec,placerat,eros,sit,amet,libero,interdum,in,varius,leo,porttitor,Mauris,non,congue,metus,nec,posuere,nulla,Vivamus,ex,leo,sollicitudin,iaculis,tincidunt,ac,aliquam,sed,urna
 Nulla,maximus,leo,accumsan,ut,lacinia,diam,nunc,lacus,elementum,eget,a,justo,at,ligula,dapibus,dictum,in,eu,justo,Maecenas,finibus,fringilla,laoreet,Mauris,nec,ante,semper,ultrices,lorem,ut,tincidunt,lacus,Morbi,dapibus,lobortis,efficitur
 Mauris,vel,purus,finibus,egestas,non,eu,hendrerit,augue,ut,cursus,imperdiet,ac,maximus,porttitor,In,et,velit,eleifend,dictum,turpis,et,interdum,metus,Phasellus,ligula,risus,fermentum,at,dui,pellentesque,mollis,ultricies,dui,Duis,et,faucibus,metus,Maecenas,cursus,tincidunt,finibus,Nunc,eget,aliquam,justo,Proin,eros,tortor,sollicitudin,semper,condimentum,sed,hendrerit,at,urna,Maecenas,lobortis,nisi,vel,scelerisque,tristique,eros,libero,condimentum,urna,vel,porta,mi,purus,id,tellus,In,vel,orci,nunc,Curabitur,tempus,vehicula,eros,sed,varius,Curabitur,luctus,ipsum,eget,hendrerit,volutpat,leo,sapien,convallis,mi,tempor,fringilla,metus,odio,cursus,metus
@@ -34,8 +35,9 @@ Maecenas,dapibus,dapibus,aliquam,Class,aptent,taciti,litora,torquent,per,conubia
 ## Second
 * Skip lines without delimiter
 * Use inverse / complement of fields specified
+<!-- `$ echo \$ slice inputs/small_pipe.txt -d "|" -f -3,12-15,6-9,22,30- -s "," -c && cargo run --quiet --release -- inputs/small_pipe.txt -d "|" -f -3,12-15,6-9,22,30- -s "," -c` -->
 ```
-shell> slice inputs/pipe.sv -d "|" -f -3,12-15,6-9,22,30- -s "," -c
+$ slice inputs/small_pipe.txt -d | -f -3,12-15,6-9,22,30- -s , -c
 lobortis,varius,nunc,Nulla,nisl,suscipit,sed,ultrices,nunc,ornare,sed,nisi,a,orci,luctus,venenatis,eget
 cursus,erat,elementum,Donec,justo,eget,congue,lobortis,felis,Quisque,lorem,nec,massa,faucibus,vestibulum,Maecenas,vel
 vel,dolor,tellus,Mauris,rutrum,Nunc,tincidunt,eros,non,ex,quis,mollis,lacus,mattis,Vestibulum,commodo,metus
@@ -61,8 +63,9 @@ diam,ut,sociosqu,ad,nostra,per,inceptos,himenaeos,Interdum,et,fames,ac,ante,ipsu
 ## Third
 * Include lines without delimiter
 * Use inverse / complement of fields specified
+<!-- `$ echo \$ slice inputs/small_pipe.txt -d "|" -f -3,12-15,6-9,22,30- -s "," -c -n && cargo run --quiet --release -- inputs/small_pipe.txt -d "|" -f -3,12-15,6-9,22,30- -s "," -c -n` -->
 ```
-shell> slice inputs/pipe.sv -d "|" -f -3,12-15,6-9,22,30- -s "," -c -n
+$ slice inputs/small_pipe.txt -d | -f -3,12-15,6-9,22,30- -s , -c -n
 lobortis,varius,nunc,Nulla,nisl,suscipit,sed,ultrices,nunc,ornare,sed,nisi,a,orci,luctus,venenatis,eget
 
 cursus,erat,elementum,Donec,justo,eget,congue,lobortis,felis,Quisque,lorem,nec,massa,faucibus,vestibulum,Maecenas,vel
@@ -102,4 +105,5 @@ rhoncus,Sed,volutpat,at,nec,leo,nec,tellus,euismod,consectetur,lobortis,orci,sit
 dui,id,urna,sem,ut,Integer,augue,nibh,ultrices,id,ut,accumsan,at,odio,Vivamus,elementum,mauris
 
 diam,ut,sociosqu,ad,nostra,per,inceptos,himenaeos,Interdum,et,fames,ac,ante,ipsum,primis,in,faucibus
+
 ```
